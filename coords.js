@@ -7,10 +7,29 @@ let markers = {
   dms: null,
 };
 
+const defaultPrecision = 5;
+
+/**
+ * Checks if the given latitude and longitude are valid coordinates.
+ * @param {*} lat
+ * @param {*} lng
+ * @returns {boolean} True if valid, false otherwise.
+ */
+const isValidCoordinate = (lat, lng) => {
+  return (
+    !isNaN(lat) &&
+    !isNaN(lng) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180
+  );
+};
+
 // Initialize and add the map
-function initMap() {
-  // Default location (San Francisco)
-  const defaultLocation = [48.816662, -123.508873]; // Note: Leaflet uses [lat, lng] format
+const initMap = () => {
+  // Default location (Salt Spring Island)
+  const defaultLocation = [48.816662, -123.508873];
 
   // Create the map with OpenStreetMap tiles
   map = L.map("map").setView(defaultLocation, 18);
@@ -72,41 +91,37 @@ function initMap() {
   }).addTo(map);
 
   // Set up form event listener
-  document
-    .getElementById("coordinateForm")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
-      const lat = parseFloat(document.getElementById("latitude").value);
-      const lng = parseFloat(document.getElementById("longitude").value);
+  document.getElementById("coordinateForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const lat = parseFloat(document.getElementById("latitude").value);
+    const lng = parseFloat(document.getElementById("longitude").value);
 
-      if (isValidCoordinate(lat, lng)) {
-        updateMapLocation(lat, lng, "Custom location");
-      } else {
-        alert(
-          "Please enter valid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180."
-        );
-      }
-    });
+    if (isValidCoordinate(lat, lng)) {
+      updateMapLocation(lat, lng, "Custom location");
+    } else {
+      alert(
+        "Please enter valid coordinates. Latitude must be between -90 and 90, longitude between -180 and 180."
+      );
+    }
+  });
 
   // Set up current location button
   document
     .getElementById("currentLocationBtn")
-    .addEventListener("click", function () {
+    .addEventListener("click", () => {
       getCurrentLocation();
     });
 
   // Set up toggle event listeners
-  document
-    .getElementById("inputToggle")
-    .addEventListener("change", function () {
-      if (this.checked) {
-        markers.input.addTo(map);
-      } else {
-        map.removeLayer(markers.input);
-      }
-    });
+  document.getElementById("inputToggle").addEventListener("change", () => {
+    if (this.checked) {
+      markers.input.addTo(map);
+    } else {
+      map.removeLayer(markers.input);
+    }
+  });
 
-  document.getElementById("ddToggle").addEventListener("change", function () {
+  document.getElementById("ddToggle").addEventListener("change", () => {
     if (this.checked) {
       markers.dd.addTo(map);
     } else {
@@ -114,7 +129,7 @@ function initMap() {
     }
   });
 
-  document.getElementById("dmToggle").addEventListener("change", function () {
+  document.getElementById("dmToggle").addEventListener("change", () => {
     if (this.checked) {
       markers.dm.addTo(map);
     } else {
@@ -122,7 +137,7 @@ function initMap() {
     }
   });
 
-  document.getElementById("dmsToggle").addEventListener("change", function () {
+  document.getElementById("dmsToggle").addEventListener("change", () => {
     if (this.checked) {
       markers.dms.addTo(map);
     } else {
@@ -131,71 +146,53 @@ function initMap() {
   });
 
   // Set up precision control event listeners
-  document
-    .getElementById("ddPrecision")
-    .addEventListener("change", function () {
-      // Re-run coordinate conversion when precision changes
-      const lat = parseFloat(document.getElementById("latitude").value);
-      const lng = parseFloat(document.getElementById("longitude").value);
-      if (isValidCoordinate(lat, lng)) {
-        updateMapLocation(lat, lng, "Updated precision");
-      }
-    });
+  document.getElementById("ddPrecision").addEventListener("change", () => {
+    const lat = parseFloat(document.getElementById("latitude").value);
+    const lng = parseFloat(document.getElementById("longitude").value);
+    if (isValidCoordinate(lat, lng)) {
+      updateMapLocation(lat, lng, "Updated precision");
+    }
+  });
 
-  document
-    .getElementById("dmPrecision")
-    .addEventListener("change", function () {
-      const lat = parseFloat(document.getElementById("latitude").value);
-      const lng = parseFloat(document.getElementById("longitude").value);
-      if (isValidCoordinate(lat, lng)) {
-        updateMapLocation(lat, lng, "Updated precision");
-      }
-    });
+  document.getElementById("dmPrecision").addEventListener("change", () => {
+    const lat = parseFloat(document.getElementById("latitude").value);
+    const lng = parseFloat(document.getElementById("longitude").value);
+    if (isValidCoordinate(lat, lng)) {
+      updateMapLocation(lat, lng, "Updated precision");
+    }
+  });
 
-  document
-    .getElementById("dmsPrecision")
-    .addEventListener("change", function () {
-      const lat = parseFloat(document.getElementById("latitude").value);
-      const lng = parseFloat(document.getElementById("longitude").value);
-      if (isValidCoordinate(lat, lng)) {
-        updateMapLocation(lat, lng, "Updated precision");
-      }
-    });
+  document.getElementById("dmsPrecision").addEventListener("change", () => {
+    const lat = parseFloat(document.getElementById("latitude").value);
+    const lng = parseFloat(document.getElementById("longitude").value);
+    if (isValidCoordinate(lat, lng)) {
+      updateMapLocation(lat, lng, "Updated precision");
+    }
+  });
 
   // Try to get current location on page load
   getCurrentLocation();
-}
+};
 
-function isValidCoordinate(lat, lng) {
-  return (
-    !isNaN(lat) &&
-    !isNaN(lng) &&
-    lat >= -90 &&
-    lat <= 90 &&
-    lng >= -180 &&
-    lng <= 180
-  );
-}
-
-function updateMapLocation(lat, lng, title) {
-  const inputLocation = [lat, lng]; // Leaflet uses [lat, lng] format
+const updateMapLocation = (lat, lng) => {
+  const inputLocation = [lat, lng];
 
   // Update map center to input coordinates
   map.setView(inputLocation, 18);
 
   // Update form fields
-  document.getElementById("latitude").value = lat.toFixed(6);
-  document.getElementById("longitude").value = lng.toFixed(6);
+  document.getElementById("latitude").value = lat.toFixed(5);
+  document.getElementById("longitude").value = lng.toFixed(5);
 
   // Display input coordinates
   document.getElementById("inputDisplay").textContent = `${lat.toFixed(
-    6
-  )}, ${lng.toFixed(6)}`;
+    5
+  )}, ${lng.toFixed(5)}`;
 
   // Update input marker (red)
   markers.input.setLatLng(inputLocation);
   markers.input.bindTooltip(
-    `Browser Location (DD): ${lat.toFixed(6)}, ${lng.toFixed(6)}`
+    `Browser Location (DD): ${lat.toFixed(5)}, ${lng.toFixed(5)}`
   );
   if (document.getElementById("inputToggle").checked) {
     markers.input.addTo(map);
@@ -206,7 +203,8 @@ function updateMapLocation(lat, lng, title) {
     // Parse the numeric input to DD objects, then format for display
     const [latDD, lonDD] = CoordConversion.parsePairToDD(lat, lng);
     const ddPrecision =
-      parseInt(document.getElementById("ddPrecision").value) || 5;
+      parseInt(document.getElementById("ddPrecision").value) ||
+      defaultPrecision;
     const [latStrDD, lonStrDD] = CoordConversion.formatDDPair(
       latDD,
       lonDD,
@@ -242,7 +240,7 @@ function updateMapLocation(lat, lng, title) {
     const [latDD, lonDD] = CoordConversion.parsePairToDD(lat, lng);
     const dmPrecision = Math.max(
       1,
-      parseInt(document.getElementById("dmPrecision").value) || 2
+      parseInt(document.getElementById("dmPrecision").value) || defaultPrecision
     );
 
     // Apply precision during conversion using function options
@@ -283,7 +281,8 @@ function updateMapLocation(lat, lng, title) {
     const [latDD, lonDD] = CoordConversion.parsePairToDD(lat, lng);
     const dmsPrecision = Math.max(
       1,
-      parseInt(document.getElementById("dmsPrecision").value) || 2
+      parseInt(document.getElementById("dmsPrecision").value) ||
+        defaultPrecision
     );
 
     // Apply precision during conversion using function options
@@ -319,17 +318,17 @@ function updateMapLocation(lat, lng, title) {
     console.error("Error converting coordinates to DMS format:", error);
     document.getElementById("dmsDisplay").textContent = "Conversion error";
   }
-}
+};
 
-function getCurrentLocation() {
+const getCurrentLocation = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      function (position) {
+      (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         updateMapLocation(lat, lng, "Your current location");
       },
-      function (error) {
+      (error) => {
         console.error("Error getting location:", error);
         alert("Could not get your current location. Error: " + error.message);
       },
@@ -342,9 +341,9 @@ function getCurrentLocation() {
   } else {
     alert("Geolocation is not supported by this browser.");
   }
-}
+};
 
 // Initialize the map when the page loads
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   initMap();
 });
