@@ -1,4 +1,4 @@
-##
+## CoordConversions Demo
 
 This is the code for a simple demo of the CoordConversion library.
 
